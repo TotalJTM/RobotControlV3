@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Socketio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" charset="utf-8">
+      var socket = io.connect('http://' + document.domain + ':' + location.port);
+      socket.on('mainpage-update', function(data){
+        //console.log(data);
+          for(var objkey in data){
+            document.getElementById(data[objkey]['id']+'-value').innerHTML = data[objkey]['value'];
+          }
+      });
+
+      function sendCommand(command){
+        var pathArray = window.location.pathname.split('/');
+        socket.emit('command', {'cmd':String(command)});
+      }
+    </script>
+
+    <title>Web Interface Dashboard</title>
+  </head>
+  <body>
+      <h1 style="margin-bottom: 2rem;">Dashboard</h1>
+    <div class="container">
+      {% block content %}
+      {% for group in session.pop('groups') %}
+      {% if group['name'] == 'header' %}
+      <div class="" style="margin-bottom: 2rem;">
+        {% for obj in group['content'] %}
+        <p style="display: inline" id="{{obj['id']}}-label">{{obj['text']}}</p> <p style="display: inline"> : </p> <div style="display: inline" id="{{obj['id']}}-value">{{obj['value']}}</div> <p></p>
+        {% endfor %}
+      </div>
+      {% else %}
+      <h3>{{group['label']}}</h3>
+      <div class="row">
+        {% for obj in group['content'] %}
+        <div class="card" style="width: 8rem; margin-left: 1rem; margin-right: 1rem; margin-top: 0rem; margin-bottom: 2rem;">
+            <div class="card-header text-center" id="{{obj['id']}}-label">{{obj['text']}}</div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item text-center" id="{{obj['id']}}-value">{{obj['value']}}</li>
+          </ul>
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% endfor %}
+      {% endblock content %}
+    </div>
+  </body>
+</html>

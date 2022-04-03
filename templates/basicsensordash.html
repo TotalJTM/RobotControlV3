@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Socketio -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" integrity="sha512-aMGMvNYu8Ue4G+fHa359jcPb1u+ytAF+P2SCb+PxrjCdO3n3ZTxJ30zuH39rimUggmTwmh2u7wvQsDTHESnmfQ==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+    <script type="text/javascript" charset="utf-8">
+      var socket = io.connect('http://' + document.domain + ':' + location.port);
+      socket.on('update', function(data){
+          for(var senskey in data){
+            //console.log(data[senskey]);
+            //var val in key
+            for(x in data[senskey]){
+                console.log(data[senskey][x]);
+                document.getElementById(senskey+'-value').innerHTML = data[senskey][x];
+            }
+          }
+      });
+      
+    //   function sendCommand(command){
+    //     var pathArray = window.location.pathname.split('/');
+    //     socket.emit('command', {'cmd':String(command)});
+    //   }
+    </script>
+
+    <title>Web Sensor Dashboard</title>
+  </head>
+  <body>
+    <div class="container">
+      {% block content %}
+      <h1>Sensors</h1>
+        {% for senskey, values in session.pop('sensors').items() %}
+        <div class="sensor">
+          <h2>{{senskey}}</h2>
+          {% for key, value in values.items() %}
+          <p id="{{senskey}}-value">{{key}}: {{value}}</p>
+          {% endfor %}
+        </div>
+        {% endfor %}
+      {% endblock content %}
+    </div>
+  </body>
+</html>
